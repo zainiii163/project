@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('order_id');
+            $table->string('payment_method');
+            $table->decimal('amount', 10, 2);
+            $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
+            $table->datetime('transaction_date');
+            $table->string('transaction_id')->nullable()->comment('Payment gateway transaction ID');
+            $table->text('notes')->nullable();
+            $table->timestamps();
+
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->index('transaction_date');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('transactions');
+    }
+};
+
