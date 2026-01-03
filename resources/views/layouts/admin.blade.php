@@ -80,6 +80,11 @@
         </div>
     </div>
 
+    <!-- Chatbot Widget -->
+    @if(auth()->check() && (auth()->user()->isStudent() || auth()->user()->isTeacher()))
+        @include('components.chatbot')
+    @endif
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{{ asset('js/admin/adomx.js') }}"></script>

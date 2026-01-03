@@ -57,7 +57,11 @@ class AdminCourseController extends Controller
             'thumbnail' => 'nullable|image|max:2048',
             'objectives' => 'nullable|string',
             'requirements' => 'nullable|string',
-            'status' => 'required|in:draft,published',
+            'prerequisites' => 'nullable|string',
+            'skill_tags' => 'nullable|string',
+            'visibility' => 'required|in:public,private,subscription_only,restricted',
+            'content_type' => 'nullable|in:video,pdf,scorm,ar_vr,interactive',
+            'status' => 'required|in:draft,pending_approval,published,rejected,archived',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']);
@@ -95,7 +99,11 @@ class AdminCourseController extends Controller
             'thumbnail' => 'nullable|image|max:2048',
             'objectives' => 'nullable|string',
             'requirements' => 'nullable|string',
-            'status' => 'required|in:draft,published',
+            'prerequisites' => 'nullable|string',
+            'skill_tags' => 'nullable|string',
+            'visibility' => 'required|in:public,private,subscription_only,restricted',
+            'content_type' => 'nullable|in:video,pdf,scorm,ar_vr,interactive',
+            'status' => 'required|in:draft,pending_approval,published,rejected,archived',
         ]);
 
         if ($request->hasFile('thumbnail')) {

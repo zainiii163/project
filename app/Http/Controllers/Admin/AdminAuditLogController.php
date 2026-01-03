@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Services\ActivityTrackingService;
 use Illuminate\Http\Request;
 
 class AdminAuditLogController extends Controller
@@ -32,7 +33,25 @@ class AdminAuditLogController extends Controller
         $logs = $query->latest()->paginate(50);
         $users = User::all();
 
-        return view('admin.audit-logs.index', compact('logs', 'users'));
+        // Activity statistics
+        $stats = [
+            'total_actions' => AuditLog::count(),
+            'today_actions' => AuditLog::whereDate('created_at', today())->count(),
+            'top_actions' => AuditLog::selectRaw('action, COUNT(*) as count')
+                ->groupBy('action')
+                ->orderByDesc('count')
+                ->limit(10)
+                ->get(),
+            'top_users' => AuditLog::selectRaw('user_id, COUNT(*) as count')
+                ->whereNotNull('user_id')
+                ->groupBy('user_id')
+                ->with('user')
+                ->orderByDesc('count')
+                ->limit(10)
+                ->get(),
+        ];
+
+        return view('admin.audit-logs.index', compact('logs', 'users', 'stats'));
     }
 
     public function show(AuditLog $auditLog)

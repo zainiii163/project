@@ -168,6 +168,69 @@
         </div>
     </div>
 
+    @if(isset($pendingEarnings) || isset($totalEarnings) || isset($totalPayouts))
+    <!-- Earnings & Payouts Section -->
+    <div class="adomx-col-md-12">
+        <div class="adomx-card">
+            <div class="adomx-card-header">
+                <h3>Earnings & Payouts</h3>
+            </div>
+            <div class="adomx-card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; padding: 20px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="font-size: 28px; font-weight: bold; color: var(--warning-color);">${{ number_format($pendingEarnings ?? 0, 2) }}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Pending Earnings</div>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="font-size: 28px; font-weight: bold; color: var(--success-color);">${{ number_format($totalEarnings ?? 0, 2) }}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Total Earned</div>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="font-size: 28px; font-weight: bold; color: var(--info-color);">${{ number_format($totalPayouts ?? 0, 2) }}</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">Total Payouts</div>
+                    </div>
+                </div>
+
+                @if(isset($recentCommissions) && $recentCommissions->isNotEmpty())
+                <div style="margin-top: 30px;">
+                    <h4 style="margin-bottom: 15px;">Recent Commissions</h4>
+                    <div class="table-responsive">
+                        <table class="adomx-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Order</th>
+                                    <th>Amount</th>
+                                    <th>Rate</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($recentCommissions as $commission)
+                                <tr>
+                                    <td>{{ $commission->course->title ?? 'N/A' }}</td>
+                                    <td>#{{ substr($commission->order_id, 0, 8) }}</td>
+                                    <td>${{ number_format($commission->amount, 2) }}</td>
+                                    <td>{{ number_format($commission->commission_rate, 1) }}%</td>
+                                    <td>
+                                        <span class="badge badge-{{ $commission->status === 'paid' ? 'success' : 'warning' }}">
+                                            {{ ucfirst($commission->status) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $commission->created_at->format('M d, Y') }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Course Performance Chart -->
     <div class="adomx-col-md-6">
         <div class="adomx-card">
@@ -180,29 +243,60 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Quick Actions - All Features -->
     <div class="adomx-col-md-12">
         <div class="adomx-card">
             <div class="adomx-card-header">
-                <h3>Quick Actions</h3>
+                <h3>Quick Actions - All Features</h3>
             </div>
             <div class="adomx-card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <a href="{{ route('teacher.courses.create') }}" class="adomx-btn adomx-btn-primary" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <!-- Course Management -->
+                    <a href="{{ route('teacher.courses.index') }}" class="adomx-btn adomx-btn-primary" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-book" style="font-size: 32px;"></i>
+                        <span>My Courses</span>
+                    </a>
+                    <a href="{{ route('teacher.courses.create') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-plus-circle" style="font-size: 32px;"></i>
                         <span>Create Course</span>
                     </a>
+                    
+                    <!-- Content Management -->
                     <a href="{{ route('teacher.lessons.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-video" style="font-size: 32px;"></i>
-                        <span>Manage Lessons</span>
+                        <span>Lessons</span>
                     </a>
                     <a href="{{ route('teacher.quizzes.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-question-circle" style="font-size: 32px;"></i>
-                        <span>Manage Quizzes</span>
+                        <span>Quizzes</span>
                     </a>
                     <a href="{{ route('teacher.assignments.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-tasks" style="font-size: 32px;"></i>
-                        <span>Manage Assignments</span>
+                        <span>Assignments</span>
+                    </a>
+                    
+                    <!-- Communication -->
+                    <a href="{{ route('teacher.discussions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-comments" style="font-size: 32px;"></i>
+                        <span>Discussions</span>
+                    </a>
+                    <a href="{{ route('teacher.reviews.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-star" style="font-size: 32px;"></i>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="{{ route('teacher.announcements.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-bullhorn" style="font-size: 32px;"></i>
+                        <span>Announcements</span>
+                    </a>
+                    
+                    <!-- Features -->
+                    <a href="{{ route('teacher.live-sessions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-video" style="font-size: 32px;"></i>
+                        <span>Live Sessions</span>
+                    </a>
+                    <a href="{{ route('teacher.calendar.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-calendar" style="font-size: 32px;"></i>
+                        <span>Calendar</span>
                     </a>
                 </div>
             </div>

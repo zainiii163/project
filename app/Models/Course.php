@@ -94,6 +94,21 @@ class Course extends Model
         return $this->belongsToMany(Subscription::class, 'subscription_course');
     }
 
+    public function translations()
+    {
+        return $this->hasMany(CourseTranslation::class);
+    }
+
+    public function seoMeta()
+    {
+        return $this->morphOne(SeoMeta::class, 'model');
+    }
+
+    public function commissions()
+    {
+        return $this->hasMany(Commission::class);
+    }
+
     // Helper methods
     public function publish()
     {
@@ -102,7 +117,7 @@ class Course extends Model
 
     public function getAverageRatingAttribute()
     {
-        return $this->reviews()->avg('rating') ?? 0;
+        return $this->reviews()->where('status', 'approved')->avg('rating') ?? 0;
     }
 
     public function getTotalEnrollmentsAttribute()

@@ -22,6 +22,10 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\User::class => \App\Policies\UserPolicy::class,
         \App\Models\Assignment::class => \App\Policies\AssignmentPolicy::class,
         \App\Models\Order::class => \App\Policies\OrderPolicy::class,
+        \App\Models\CalendarEvent::class => \App\Policies\CalendarEventPolicy::class,
+        \App\Models\SupportTicket::class => \App\Policies\SupportTicketPolicy::class,
+        \App\Models\LiveSession::class => \App\Policies\LiveSessionPolicy::class,
+        \App\Models\Resource::class => \App\Policies\ResourcePolicy::class,
     ];
 
     /**

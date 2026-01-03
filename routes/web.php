@@ -39,12 +39,39 @@ use App\Http\Controllers\Teacher\TeacherLessonController;
 use App\Http\Controllers\Teacher\TeacherQuizController;
 use App\Http\Controllers\Teacher\TeacherAssignmentController;
 use App\Http\Controllers\Teacher\TeacherDiscussionController;
+use App\Http\Controllers\Teacher\TeacherProfileController;
+use App\Http\Controllers\Teacher\TeacherPaymentController;
+use App\Http\Controllers\Teacher\TeacherBlogController;
 use App\Http\Controllers\Student\StudentCourseController;
+use App\Http\Controllers\Student\StudentProfileController;
+use App\Http\Controllers\Student\StudentBlogController;
 use App\Http\Controllers\Student\StudentProgressController;
 use App\Http\Controllers\Student\StudentAssignmentController;
 use App\Http\Controllers\Student\StudentQuizController;
 use App\Http\Controllers\Student\StudentCertificateController;
 use App\Http\Controllers\Student\StudentReviewController;
+use App\Http\Controllers\Student\StudentSubscriptionController;
+use App\Http\Controllers\GamificationController;
+use App\Http\Controllers\Admin\AdminGamificationController;
+use App\Http\Controllers\LiveSessionController;
+use App\Http\Controllers\Admin\AdminLiveSessionController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\Admin\AdminSupportTicketController;
+use App\Http\Controllers\Admin\AdminReportingController;
+use App\Http\Controllers\Admin\AdminSeoController;
+use App\Http\Controllers\Admin\AdminPayoutController;
+use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\Admin\AdminMembershipPlanController;
+use App\Http\Controllers\Admin\AdminContentModerationController;
+use App\Http\Controllers\Admin\AdminSurveyController;
+use App\Http\Controllers\Admin\AdminFeedbackController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\OfflineAccessController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,12 +90,22 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+// Localization Routes (Public)
+Route::get('/locale/{locale}', [LocalizationController::class, 'switchLanguage'])->name('locale.switch');
+Route::post('/locale', [LocalizationController::class, 'setUserLanguage'])->name('locale.set');
+
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Password Reset Routes
+    Route::get('/forgot-password', [AuthController::class, 'showPasswordRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showPasswordResetForm'])->name('password.reset');
+    Route::post('/reset-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
@@ -186,6 +223,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
     Route::post('/announcements/{announcement}/read', [AnnouncementController::class, 'markAsRead'])->name('announcements.read');
 
+    // Notifications (User)
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+
     // Certificates
     Route::post('/courses/{course}/certificate', [CertificateController::class, 'generate'])->name('certificates.generate');
     Route::get('/certificates/{certificate}', [CertificateController::class, 'show'])->name('certificates.show');
@@ -242,6 +284,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::get('/lessons', [AdminLessonController::class, 'index'])->name('lessons.index');
     Route::get('/lessons/create', [AdminLessonController::class, 'create'])->name('lessons.create');
     Route::post('/lessons', [AdminLessonController::class, 'store'])->name('lessons.store');
+    Route::get('/lessons/{lesson}', [AdminLessonController::class, 'show'])->name('lessons.show');
     Route::get('/lessons/{lesson}/edit', [AdminLessonController::class, 'edit'])->name('lessons.edit');
     Route::put('/lessons/{lesson}', [AdminLessonController::class, 'update'])->name('lessons.update');
     Route::delete('/lessons/{lesson}', [AdminLessonController::class, 'destroy'])->name('lessons.destroy');
@@ -274,6 +317,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/create', [AdminNotificationController::class, 'create'])->name('notifications.create');
     Route::post('/notifications', [AdminNotificationController::class, 'store'])->name('notifications.store');
+    Route::post('/notifications/bulk', [AdminNotificationController::class, 'sendBulkNotification'])->name('notifications.bulk');
     Route::delete('/notifications/{notification}', [AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::post('/notifications/mark-all-read', [AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 
@@ -288,6 +332,119 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::get('/analytics/revenue', [AdminAnalyticsController::class, 'revenue'])->name('analytics.revenue');
     Route::get('/analytics/users', [AdminAnalyticsController::class, 'users'])->name('analytics.users');
     Route::get('/analytics/kpis', [AdminAnalyticsController::class, 'kpis'])->name('analytics.kpis');
+
+    // Gamification Management
+    Route::get('/gamification', [AdminGamificationController::class, 'index'])->name('gamification.index');
+    Route::get('/gamification/create', [AdminGamificationController::class, 'create'])->name('gamification.create');
+    Route::post('/gamification', [AdminGamificationController::class, 'store'])->name('gamification.store');
+    Route::get('/gamification/{badge}/edit', [AdminGamificationController::class, 'edit'])->name('gamification.edit');
+    Route::put('/gamification/{badge}', [AdminGamificationController::class, 'update'])->name('gamification.update');
+    Route::delete('/gamification/{badge}', [AdminGamificationController::class, 'destroy'])->name('gamification.destroy');
+    Route::get('/gamification/leaderboard', [AdminGamificationController::class, 'leaderboard'])->name('gamification.leaderboard');
+
+    // Live Session Management
+    Route::get('/live-sessions', [AdminLiveSessionController::class, 'index'])->name('live-sessions.index');
+    Route::get('/live-sessions/create', [AdminLiveSessionController::class, 'create'])->name('live-sessions.create');
+    Route::post('/live-sessions', [AdminLiveSessionController::class, 'store'])->name('live-sessions.store');
+    Route::get('/live-sessions/{liveSession}/edit', [AdminLiveSessionController::class, 'edit'])->name('live-sessions.edit');
+    Route::put('/live-sessions/{liveSession}', [AdminLiveSessionController::class, 'update'])->name('live-sessions.update');
+    Route::delete('/live-sessions/{liveSession}', [AdminLiveSessionController::class, 'destroy'])->name('live-sessions.destroy');
+    Route::post('/live-sessions/{liveSession}/start', [AdminLiveSessionController::class, 'start'])->name('live-sessions.start');
+    Route::post('/live-sessions/{liveSession}/end', [AdminLiveSessionController::class, 'end'])->name('live-sessions.end');
+
+    // Calendar Management
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+    Route::put('/calendar/{calendarEvent}', [CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendar/{calendarEvent}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+
+    // Support Ticket Management
+    Route::get('/support', [AdminSupportTicketController::class, 'index'])->name('support.index');
+    Route::get('/support/{supportTicket}', [AdminSupportTicketController::class, 'show'])->name('support.show');
+    Route::post('/support/{supportTicket}/assign', [AdminSupportTicketController::class, 'assign'])->name('support.assign');
+    Route::post('/support/{supportTicket}/status', [AdminSupportTicketController::class, 'updateStatus'])->name('support.update-status');
+    Route::post('/support/{supportTicket}/priority', [AdminSupportTicketController::class, 'updatePriority'])->name('support.update-priority');
+    Route::post('/support/{supportTicket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support.reply');
+    Route::delete('/support/{supportTicket}', [AdminSupportTicketController::class, 'destroy'])->name('support.destroy');
+    Route::get('/support/analytics', [AdminSupportTicketController::class, 'analytics'])->name('support.analytics');
+
+    // Content Moderation
+    Route::get('/moderation', [AdminContentModerationController::class, 'index'])->name('moderation.index');
+    Route::post('/moderation/courses/{course}/approve', [AdminContentModerationController::class, 'approveCourse'])->name('moderation.approve-course');
+    Route::post('/moderation/courses/{course}/reject', [AdminContentModerationController::class, 'rejectCourse'])->name('moderation.reject-course');
+    Route::get('/moderation/courses/{course}/review', [AdminContentModerationController::class, 'reviewCourse'])->name('moderation.review-course');
+    Route::post('/moderation/lessons/{lesson}/approve', [AdminContentModerationController::class, 'approveLesson'])->name('moderation.approve-lesson');
+    Route::post('/moderation/lessons/{lesson}/reject', [AdminContentModerationController::class, 'rejectLesson'])->name('moderation.reject-lesson');
+    Route::post('/moderation/quizzes/{quiz}/approve', [AdminContentModerationController::class, 'approveQuiz'])->name('moderation.approve-quiz');
+    Route::post('/moderation/quizzes/{quiz}/reject', [AdminContentModerationController::class, 'rejectQuiz'])->name('moderation.reject-quiz');
+    Route::post('/moderation/bulk-approve', [AdminContentModerationController::class, 'bulkApprove'])->name('moderation.bulk-approve');
+
+    // Membership Plans
+    Route::get('/membership-plans', [AdminMembershipPlanController::class, 'index'])->name('membership-plans.index');
+    Route::get('/membership-plans/create', [AdminMembershipPlanController::class, 'create'])->name('membership-plans.create');
+    Route::post('/membership-plans', [AdminMembershipPlanController::class, 'store'])->name('membership-plans.store');
+    Route::get('/membership-plans/{membershipPlan}/edit', [AdminMembershipPlanController::class, 'edit'])->name('membership-plans.edit');
+    Route::put('/membership-plans/{membershipPlan}', [AdminMembershipPlanController::class, 'update'])->name('membership-plans.update');
+    Route::delete('/membership-plans/{membershipPlan}', [AdminMembershipPlanController::class, 'destroy'])->name('membership-plans.destroy');
+
+    // Reporting
+    Route::get('/reports', [AdminReportingController::class, 'index'])->name('reports.index');
+    Route::get('/reports/enrollments', [AdminReportingController::class, 'enrollments'])->name('reports.enrollments');
+    Route::get('/reports/revenue', [AdminReportingController::class, 'revenue'])->name('reports.revenue');
+    Route::get('/reports/users', [AdminReportingController::class, 'users'])->name('reports.users');
+    Route::get('/reports/courses', [AdminReportingController::class, 'courses'])->name('reports.courses');
+    Route::post('/reports/export', [AdminReportingController::class, 'export'])->name('reports.export');
+
+    // SEO Management
+    Route::get('/seo', [AdminSeoController::class, 'index'])->name('seo.index');
+    Route::get('/seo/{seoMeta}/edit', [AdminSeoController::class, 'edit'])->name('seo.edit');
+    Route::post('/seo/courses/{course}/generate', [AdminSeoController::class, 'generateForCourse'])->name('seo.generate-course');
+    Route::put('/seo/{seoMeta}', [AdminSeoController::class, 'update'])->name('seo.update');
+    Route::post('/seo/bulk-generate', [AdminSeoController::class, 'bulkGenerate'])->name('seo.bulk-generate');
+
+    // Payout Management
+    Route::get('/payouts', [AdminPayoutController::class, 'index'])->name('payouts.index');
+    Route::get('/payouts/create', [AdminPayoutController::class, 'create'])->name('payouts.create');
+    Route::post('/payouts', [AdminPayoutController::class, 'store'])->name('payouts.store');
+    Route::get('/payouts/{payout}', [AdminPayoutController::class, 'show'])->name('payouts.show');
+    Route::post('/payouts/{payout}/mark-as-paid', [AdminPayoutController::class, 'complete'])->name('payouts.mark-as-paid');
+    Route::post('/payouts/{payout}/process', [AdminPayoutController::class, 'process'])->name('payouts.process');
+    Route::post('/payouts/{payout}/complete', [AdminPayoutController::class, 'complete'])->name('payouts.complete');
+    Route::post('/payouts/{payout}/fail', [AdminPayoutController::class, 'fail'])->name('payouts.fail');
+    Route::get('/payouts/teachers/{teacher}/earnings', [AdminPayoutController::class, 'teacherEarnings'])->name('payouts.teacher-earnings');
+
+    // Membership Plans
+    Route::get('/membership-plans', [AdminMembershipPlanController::class, 'index'])->name('membership-plans.index');
+    Route::get('/membership-plans/create', [AdminMembershipPlanController::class, 'create'])->name('membership-plans.create');
+    Route::post('/membership-plans', [AdminMembershipPlanController::class, 'store'])->name('membership-plans.store');
+    Route::get('/membership-plans/{membershipPlan}/edit', [AdminMembershipPlanController::class, 'edit'])->name('membership-plans.edit');
+    Route::put('/membership-plans/{membershipPlan}', [AdminMembershipPlanController::class, 'update'])->name('membership-plans.update');
+    Route::delete('/membership-plans/{membershipPlan}', [AdminMembershipPlanController::class, 'destroy'])->name('membership-plans.destroy');
+
+    // Content Moderation
+    Route::get('/moderation', [AdminContentModerationController::class, 'index'])->name('moderation.index');
+    Route::get('/moderation/courses/{course}/review', [AdminContentModerationController::class, 'review'])->name('moderation.review');
+    Route::post('/moderation/courses/{course}/approve', [AdminContentModerationController::class, 'approve'])->name('moderation.approve');
+    Route::post('/moderation/courses/{course}/reject', [AdminContentModerationController::class, 'reject'])->name('moderation.reject');
+
+    // Surveys
+    Route::get('/surveys', [AdminSurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/create', [AdminSurveyController::class, 'create'])->name('surveys.create');
+    Route::post('/surveys', [AdminSurveyController::class, 'store'])->name('surveys.store');
+    Route::get('/surveys/{survey}', [AdminSurveyController::class, 'show'])->name('surveys.show');
+
+    // Feedback
+    Route::get('/feedback', [AdminFeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/{feedback}', [AdminFeedbackController::class, 'show'])->name('feedback.show');
+    Route::post('/feedback/{feedback}/respond', [AdminFeedbackController::class, 'respond'])->name('feedback.respond');
+    Route::post('/feedback/{feedback}/resolve', [AdminFeedbackController::class, 'resolve'])->name('feedback.resolve');
+
+    // Resources
+    Route::get('/resources', [ResourceController::class, 'index'])->name('resources.index');
+    Route::get('/resources/create', [ResourceController::class, 'create'])->name('resources.create');
+    Route::post('/resources', [ResourceController::class, 'store'])->name('resources.store');
+    Route::delete('/resources/{resource}', [ResourceController::class, 'destroy'])->name('resources.destroy');
+
     Route::get('/analytics/quiz-stats', [AdminAnalyticsController::class, 'quizStats'])->name('analytics.quiz-stats');
     Route::get('/analytics/ai-insights', [AdminAnalyticsController::class, 'aiInsights'])->name('analytics.ai-insights');
     Route::post('/analytics/generate-report', [AdminAnalyticsController::class, 'generateReport'])->name('analytics.generate-report');
@@ -324,6 +481,8 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::post('/payments/{order}/refund', [AdminPaymentController::class, 'processRefund'])->name('payments.process-refund');
     Route::get('/payments/revenue-report', [AdminPaymentController::class, 'revenueReport'])->name('payments.revenue-report');
     Route::get('/payments/revenue-report/export', [AdminPaymentController::class, 'exportRevenueReport'])->name('payments.revenue-report.export');
+    Route::get('/payments/students', [AdminPaymentController::class, 'studentPayments'])->name('payments.student-payments');
+    Route::get('/payments/teachers', [AdminPaymentController::class, 'teacherPayments'])->name('payments.teacher-payments');
     Route::get('/payments/student/{student}', [AdminPaymentController::class, 'trackPaymentsByStudent'])->name('payments.student');
     Route::get('/payments/teacher/{teacher}', [AdminPaymentController::class, 'trackPaymentsByTeacher'])->name('payments.teacher');
 
@@ -356,6 +515,10 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::get('/discussions/{discussion}', [AdminDiscussionController::class, 'show'])->name('discussions.show');
     Route::post('/discussions/{discussion}/approve', [AdminDiscussionController::class, 'approve'])->name('discussions.approve');
     Route::post('/discussions/{discussion}/reject', [AdminDiscussionController::class, 'reject'])->name('discussions.reject');
+    Route::post('/discussions/{discussion}/pin', [AdminDiscussionController::class, 'pin'])->name('discussions.pin');
+    Route::post('/discussions/{discussion}/unpin', [AdminDiscussionController::class, 'unpin'])->name('discussions.unpin');
+    Route::post('/discussions/{discussion}/lock', [AdminDiscussionController::class, 'lock'])->name('discussions.lock');
+    Route::post('/discussions/{discussion}/unlock', [AdminDiscussionController::class, 'unlock'])->name('discussions.unlock');
     Route::delete('/discussions/{discussion}', [AdminDiscussionController::class, 'destroy'])->name('discussions.destroy');
 
     // Certificate Management
@@ -369,6 +532,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('ad
     Route::get('/blog', [AdminBlogController::class, 'index'])->name('blog.index');
     Route::get('/blog/create', [AdminBlogController::class, 'create'])->name('blog.create');
     Route::post('/blog', [AdminBlogController::class, 'store'])->name('blog.store');
+    Route::get('/blog/{post}', [AdminBlogController::class, 'show'])->name('blog.show');
     Route::get('/blog/{post}/edit', [AdminBlogController::class, 'edit'])->name('blog.edit');
     Route::put('/blog/{post}', [AdminBlogController::class, 'update'])->name('blog.update');
     Route::delete('/blog/{post}', [AdminBlogController::class, 'destroy'])->name('blog.destroy');
@@ -417,6 +581,26 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
 
     // My Lessons
     Route::get('/lessons', [TeacherLessonController::class, 'index'])->name('lessons.index');
+    Route::get('/lessons/create', [TeacherLessonController::class, 'create'])->name('lessons.create');
+    Route::post('/lessons', [TeacherLessonController::class, 'store'])->name('lessons.store');
+    Route::get('/lessons/{lesson}/edit', [TeacherLessonController::class, 'edit'])->name('lessons.edit');
+    Route::put('/lessons/{lesson}', [TeacherLessonController::class, 'update'])->name('lessons.update');
+    Route::delete('/lessons/{lesson}', [TeacherLessonController::class, 'destroy'])->name('lessons.destroy');
+
+    // Profile
+    Route::get('/profile', [TeacherProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [TeacherProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [TeacherProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [TeacherProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    // Payments
+    Route::get('/payments', [TeacherPaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/commissions', [TeacherPaymentController::class, 'commissions'])->name('payments.commissions');
+    Route::get('/payments/payouts', [TeacherPaymentController::class, 'payouts'])->name('payments.payouts');
+    Route::get('/payments/payouts/{payout}', [TeacherPaymentController::class, 'showPayout'])->name('payments.show-payout');
+
+    // Blog
+    Route::get('/blog', [TeacherBlogController::class, 'index'])->name('blog.index');
 
     // My Quizzes
     Route::get('/quizzes', [TeacherQuizController::class, 'index'])->name('quizzes.index');
@@ -441,6 +625,31 @@ Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')
     Route::get('/discussions', [TeacherDiscussionController::class, 'index'])->name('discussions.index');
     Route::get('/discussions/{discussion}', [TeacherDiscussionController::class, 'show'])->name('discussions.show');
     Route::post('/discussions/{discussion}/reply', [TeacherDiscussionController::class, 'reply'])->name('discussions.reply');
+
+    // Course Reviews
+    Route::get('/reviews', [\App\Http\Controllers\Teacher\TeacherReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{review}', [\App\Http\Controllers\Teacher\TeacherReviewController::class, 'show'])->name('reviews.show');
+    Route::post('/reviews/{review}/respond', [\App\Http\Controllers\Teacher\TeacherReviewController::class, 'respond'])->name('reviews.respond');
+    Route::put('/reviews/{review}/response', [\App\Http\Controllers\Teacher\TeacherReviewController::class, 'updateResponse'])->name('reviews.update-response');
+    Route::delete('/reviews/{review}/response', [\App\Http\Controllers\Teacher\TeacherReviewController::class, 'deleteResponse'])->name('reviews.delete-response');
+
+    // Live Sessions (Teacher)
+    Route::get('/live-sessions', [LiveSessionController::class, 'index'])->name('live-sessions.index');
+    Route::get('/live-sessions/create', [LiveSessionController::class, 'create'])->name('live-sessions.create');
+    Route::post('/live-sessions', [LiveSessionController::class, 'store'])->name('live-sessions.store');
+    Route::get('/live-sessions/{liveSession}', [LiveSessionController::class, 'show'])->name('live-sessions.show');
+    Route::post('/live-sessions/{liveSession}/join', [LiveSessionController::class, 'join'])->name('live-sessions.join');
+
+    // Calendar (Teacher)
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+    Route::put('/calendar/{calendarEvent}', [CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendar/{calendarEvent}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+
+    // Announcements (Teacher)
+    Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
 });
 
 // Student Panel Routes
@@ -454,12 +663,10 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
     Route::get('/courses/recommendations', [StudentCourseController::class, 'recommendations'])->name('courses.recommendations');
     Route::get('/courses/learning-path', [StudentCourseController::class, 'learningPath'])->name('courses.learning-path');
 
-    // My Progress
-    Route::get('/progress', [StudentProgressController::class, 'index'])->name('progress.index');
-
     // My Assignments
     Route::get('/assignments', [StudentAssignmentController::class, 'index'])->name('assignments.index');
     Route::get('/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('assignments.show');
+    Route::post('/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('assignments.submit');
 
     // My Quizzes
     Route::get('/quizzes', [StudentQuizController::class, 'index'])->name('quizzes.index');
@@ -500,6 +707,88 @@ Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')
     Route::post('/payments/subscriptions/{subscription}/purchase', [StudentPaymentController::class, 'purchaseSubscription'])->name('payments.subscriptions.purchase');
     Route::post('/payments/apply-referral', [StudentPaymentController::class, 'applyReferralCredit'])->name('payments.apply-referral');
 
+    // Subscriptions (Student)
+    Route::get('/subscriptions', [StudentSubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('/subscriptions/{membershipPlan}/subscribe', [StudentSubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
+    Route::post('/subscriptions/{subscription}/cancel', [StudentSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/subscriptions/{subscription}/renew', [StudentSubscriptionController::class, 'renew'])->name('subscriptions.renew');
+    Route::post('/subscriptions/{membershipPlan}/subscribe', [\App\Http\Controllers\Student\StudentSubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
+    Route::post('/subscriptions/{subscription}/cancel', [\App\Http\Controllers\Student\StudentSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/subscriptions/{subscription}/renew', [\App\Http\Controllers\Student\StudentSubscriptionController::class, 'renew'])->name('subscriptions.renew');
+
     // My Reviews
     Route::get('/reviews', [StudentReviewController::class, 'index'])->name('reviews.index');
+
+    // Profile
+    Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [StudentProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [StudentProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.update-password');
+
+    // Blog
+    Route::get('/blog', [StudentBlogController::class, 'index'])->name('blog.index');
+
+    // Progress Tracking & Analytics
+    Route::get('/progress', [StudentProgressController::class, 'index'])->name('progress.index');
+    Route::get('/progress/dashboard', [StudentProgressController::class, 'dashboard'])->name('progress.dashboard');
+    Route::get('/progress/courses/{course}', [StudentProgressController::class, 'courseProgress'])->name('progress.course');
+
+    // Gamification
+    Route::get('/gamification/leaderboard', [GamificationController::class, 'leaderboard'])->name('gamification.leaderboard');
+    Route::get('/gamification/badges', [GamificationController::class, 'badges'])->name('gamification.badges');
+    Route::get('/gamification/my-progress', [GamificationController::class, 'myProgress'])->name('gamification.my-progress');
+
+    // Live Sessions
+    Route::get('/live-sessions', [LiveSessionController::class, 'index'])->name('live-sessions.index');
+    Route::get('/live-sessions/{liveSession}', [LiveSessionController::class, 'show'])->name('live-sessions.show');
+    Route::post('/live-sessions/{liveSession}/join', [LiveSessionController::class, 'join'])->name('live-sessions.join');
+
+    // Calendar
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+    Route::put('/calendar/{calendarEvent}', [CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendar/{calendarEvent}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+
+    // Support & Helpdesk
+    Route::get('/support', [SupportTicketController::class, 'index'])->name('support.index');
+    Route::get('/support/create', [SupportTicketController::class, 'create'])->name('support.create');
+    Route::post('/support', [SupportTicketController::class, 'store'])->name('support.store');
+    Route::get('/support/{supportTicket}', [SupportTicketController::class, 'show'])->name('support.show');
+    Route::post('/support/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->name('support.reply');
+    Route::post('/support/{supportTicket}/close', [SupportTicketController::class, 'close'])->name('support.close');
+    
+    // Chatbot
+    Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+    Route::post('/chatbot/create-ticket', [ChatbotController::class, 'createTicketFromChat'])->name('chatbot.create-ticket');
+
+    // Referrals
+    Route::get('/referrals', [ReferralController::class, 'index'])->name('referrals.index');
+    Route::post('/referrals/generate-code', [ReferralController::class, 'generateCode'])->name('referrals.generate-code');
+    Route::post('/referrals/apply-code', [ReferralController::class, 'applyCode'])->name('referrals.apply-code');
+
+    // Surveys
+    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
+    Route::post('/surveys/{survey}/submit', [SurveyController::class, 'submit'])->name('surveys.submit');
+
+    // Feedback
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+
+    // Resources
+    Route::get('/resources', [ResourceController::class, 'index'])->name('resources.index');
+    Route::get('/resources/{resource}/download', [ResourceController::class, 'download'])->name('resources.download');
+
+    // Offline Access
+    Route::get('/offline', [OfflineAccessController::class, 'index'])->name('offline.index');
+    Route::get('/offline/lessons/{lesson}/download', [OfflineAccessController::class, 'downloadLesson'])->name('offline.download-lesson');
+    Route::get('/offline/courses/{course}/materials', [OfflineAccessController::class, 'downloadCourseMaterials'])->name('offline.materials');
+    Route::post('/offline/courses/{course}/package', [OfflineAccessController::class, 'generateOfflinePackage'])->name('offline.generate-package');
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 });

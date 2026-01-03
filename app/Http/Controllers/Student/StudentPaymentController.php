@@ -99,43 +99,92 @@ class StudentPaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'payment_method' => 'required|in:credit_card,paypal,wallet',
+            'payment_method' => 'required|in:credit_card,paypal,wallet,bank_transfer',
+            'payment_gateway' => 'nullable|string',
+            'transaction_id' => 'nullable|string',
+            'gateway_response' => 'nullable|json',
         ]);
 
-        // Handle wallet payment
-        if ($validated['payment_method'] === 'wallet') {
-            $wallet = $student->wallet;
-            if (!$wallet || $wallet->balance < $order->total_price) {
-                return back()->with('error', 'Insufficient wallet balance.');
+        DB::beginTransaction();
+        try {
+            $transactionId = $validated['transaction_id'] ?? 'TXN-' . strtoupper(uniqid());
+            $status = 'pending';
+
+            // Handle different payment methods
+            if ($validated['payment_method'] === 'wallet') {
+                $wallet = $student->wallet;
+                if (!$wallet || $wallet->balance < $order->total_price) {
+                    return back()->with('error', 'Insufficient wallet balance.');
+                }
+                $wallet->debit($order->total_price);
+                $status = 'completed';
+            } elseif ($validated['payment_method'] === 'credit_card') {
+                // Integrate with Stripe, PayPal, or other payment gateway
+                // Example: Stripe
+                // $charge = \Stripe\Charge::create([
+                //     'amount' => $order->total_price * 100,
+                //     'currency' => 'usd',
+                //     'source' => $request->stripe_token,
+                // ]);
+                // $transactionId = $charge->id;
+                // $status = 'completed';
+                
+                // For now, simulate successful payment
+                $status = 'completed';
+            } elseif ($validated['payment_method'] === 'paypal') {
+                // Integrate with PayPal
+                // Process PayPal payment and get transaction ID
+                $status = 'completed';
+            } elseif ($validated['payment_method'] === 'bank_transfer') {
+                // Bank transfer - pending until confirmed
+                $status = 'pending';
             }
-            $wallet->debit($order->total_price);
-        }
 
-        // Create transaction
-        $transaction = \App\Models\Transaction::create([
-            'order_id' => $order->id,
-            'payment_method' => $validated['payment_method'],
-            'amount' => $order->total_price,
-            'status' => 'completed',
-            'transaction_date' => now(),
-            'transaction_id' => 'TXN-' . strtoupper(uniqid()),
-        ]);
+            // Create transaction
+            $transaction = \App\Models\Transaction::create([
+                'order_id' => $order->id,
+                'payment_method' => $validated['payment_method'],
+                'amount' => $order->total_price,
+                'status' => $status,
+                'transaction_date' => now(),
+                'transaction_id' => $transactionId,
+                'notes' => $validated['gateway_response'] ?? null,
+            ]);
 
-        // Update order status
-        $order->update(['status' => 'completed']);
+            // Update order status
+            if ($status === 'completed') {
+                $order->update(['status' => 'completed']);
 
-        // Enroll student in courses
-        foreach ($order->items as $item) {
-            if ($item->course) {
-                $student->courses()->syncWithoutDetaching([$item->course_id => [
-                    'enrolled_at' => now(),
-                    'progress' => 0,
-                ]]);
+                // Calculate and create commissions for teachers
+                $commissionService = new \App\Services\CommissionService();
+                $commissionService->calculateAndCreateCommissions($order);
+
+                // Enroll student in courses
+                foreach ($order->items as $item) {
+                    if ($item->course) {
+                        $student->courses()->syncWithoutDetaching([$item->course_id => [
+                            'enrolled_at' => now(),
+                            'progress' => 0,
+                        ]]);
+                    }
+                }
+            } else {
+                $order->update(['status' => 'pending']);
             }
-        }
 
-        return redirect()->route('payments.history')
-            ->with('success', 'Payment completed successfully! You have been enrolled in the course(s).');
+            DB::commit();
+
+            if ($status === 'completed') {
+                return redirect()->route('payments.history')
+                    ->with('success', 'Payment completed successfully! You have been enrolled in the course(s).');
+            } else {
+                return redirect()->route('payments.history')
+                    ->with('info', 'Payment is pending. You will be enrolled once payment is confirmed.');
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
     }
 
     public function transactionHistory()
@@ -171,9 +220,13 @@ class StudentPaymentController extends Controller
             abort(403);
         }
 
-        // Generate PDF invoice (implement with DomPDF or similar)
-        // return PDF::loadView('student.payments.invoice-pdf', compact('order'))->download();
+        // Generate PDF invoice
+        // You can use DomPDF, Snappy, or similar package
+        // Example with DomPDF:
+        // $pdf = \PDF::loadView('student.payments.invoice-pdf', compact('order'));
+        // return $pdf->download('invoice-' . $order->id . '.pdf');
         
+        // For now, return view - implement PDF generation as needed
         return view('student.payments.invoice-pdf', compact('order'));
     }
 

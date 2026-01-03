@@ -350,36 +350,147 @@
     </div>
 
     <!-- Quick Access -->
-    <div class="adomx-col-md-6">
+    <div class="adomx-col-md-12">
         <div class="adomx-card">
             <div class="adomx-card-header">
-                <h3>Quick Access</h3>
+                <h3>Quick Access - All Features</h3>
             </div>
             <div class="adomx-card-body">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <!-- User Management -->
                     <a href="{{ route('admin.users.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
                         <i class="fas fa-users" style="font-size: 28px; color: var(--primary-color);"></i>
                         <span>Users</span>
                     </a>
+                    <a href="{{ route('admin.teachers.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 28px; color: var(--primary-color);"></i>
+                        <span>Teachers</span>
+                    </a>
+                    <a href="{{ route('admin.students.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-user-graduate" style="font-size: 28px; color: var(--primary-color);"></i>
+                        <span>Students</span>
+                    </a>
+                    
+                    <!-- Course Management -->
                     <a href="{{ route('admin.courses.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
                         <i class="fas fa-book" style="font-size: 28px; color: var(--success-color);"></i>
                         <span>Courses</span>
                     </a>
+                    <a href="{{ route('admin.lessons.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-video" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Lessons</span>
+                    </a>
+                    <a href="{{ route('admin.quizzes.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-question-circle" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Quizzes</span>
+                    </a>
+                    
+                    <!-- Payment & Orders -->
                     <a href="{{ route('admin.orders.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
                         <i class="fas fa-shopping-cart" style="font-size: 28px; color: var(--info-color);"></i>
                         <span>Orders</span>
                     </a>
-                    <a href="{{ route('admin.payments.coupons.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
-                        <i class="fas fa-tag" style="font-size: 28px; color: var(--warning-color);"></i>
+                    <a href="{{ route('admin.payments.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-credit-card" style="font-size: 28px; color: var(--info-color);"></i>
+                        <span>Payments</span>
+                    </a>
+                    <a href="{{ route('admin.payments.coupons') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-tag" style="font-size: 28px; color: var(--info-color);"></i>
                         <span>Coupons</span>
                     </a>
+                    <a href="{{ route('admin.payouts.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-money-bill-wave" style="font-size: 28px; color: var(--info-color);"></i>
+                        <span>Payouts</span>
+                    </a>
+                    <a href="{{ route('admin.subscriptions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-sync-alt" style="font-size: 28px; color: var(--info-color);"></i>
+                        <span>Subscriptions</span>
+                    </a>
+                    
+                    <!-- Analytics & Reporting -->
                     <a href="{{ route('admin.analytics.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
                         <i class="fas fa-chart-bar" style="font-size: 28px; color: var(--primary-color);"></i>
                         <span>Analytics</span>
                     </a>
+                    <a href="{{ route('admin.reports.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-file-alt" style="font-size: 28px; color: var(--primary-color);"></i>
+                        <span>Reports</span>
+                    </a>
+                    
+                    <!-- Content Management -->
                     <a href="{{ route('admin.announcements.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
                         <i class="fas fa-bullhorn" style="font-size: 28px; color: var(--success-color);"></i>
                         <span>Announcements</span>
+                    </a>
+                    <a href="{{ route('admin.blog.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-blog" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Blog</span>
+                    </a>
+                    <a href="{{ route('admin.discussions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-comments" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Discussions</span>
+                    </a>
+                    <a href="{{ route('admin.reviews.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-star" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="{{ route('admin.certificates.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-certificate" style="font-size: 28px; color: var(--success-color);"></i>
+                        <span>Certificates</span>
+                    </a>
+                    
+                    <!-- Features -->
+                    <a href="{{ route('admin.gamification.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-trophy" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Gamification</span>
+                    </a>
+                    <a href="{{ route('admin.live-sessions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-video" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Live Sessions</span>
+                    </a>
+                    <a href="{{ route('admin.support.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-headset" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Support</span>
+                    </a>
+                    <a href="{{ route('admin.moderation.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-shield-alt" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Moderation</span>
+                    </a>
+                    <a href="{{ route('admin.seo.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-search" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>SEO</span>
+                    </a>
+                    <a href="{{ route('admin.membership-plans.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-crown" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Membership Plans</span>
+                    </a>
+                    <a href="{{ route('admin.resources.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-folder-open" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Resources</span>
+                    </a>
+                    <a href="{{ route('admin.surveys.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-poll" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Surveys</span>
+                    </a>
+                    <a href="{{ route('admin.feedback.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-comment-dots" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Feedback</span>
+                    </a>
+                    <a href="{{ route('admin.notifications.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-bell" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="{{ route('admin.audit-logs.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-history" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Audit Logs</span>
+                    </a>
+                    <a href="{{ route('admin.categories.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-folder" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="{{ route('admin.settings.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; text-decoration: none;">
+                        <i class="fas fa-cog" style="font-size: 28px; color: var(--warning-color);"></i>
+                        <span>Settings</span>
                     </a>
                 </div>
             </div>

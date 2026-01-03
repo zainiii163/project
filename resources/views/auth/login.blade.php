@@ -330,7 +330,7 @@
                             <input type="checkbox" name="remember" id="remember">
                             <label for="remember">Remember Me</label>
                         </div>
-                        <a href="#" class="auth-forgot-link">Forgot Password?</a>
+                        <a href="{{ route('password.request') }}" class="auth-forgot-link">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="auth-submit-btn">

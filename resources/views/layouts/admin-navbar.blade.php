@@ -19,11 +19,34 @@
     <div class="adomx-header-right">
         <div class="adomx-header-actions">
             <!-- Language -->
-            <div class="adomx-header-item">
-                <button class="adomx-header-icon" title="Language">
+            <div class="adomx-header-item adomx-language-dropdown">
+                <button class="adomx-header-icon" id="language-dropdown-toggle" title="Language">
                     <i class="fas fa-flag"></i>
                     <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
                 </button>
+                <div class="adomx-dropdown-menu" id="language-dropdown-menu" style="min-width: 200px;">
+                    @php
+                        $languages = [
+                            'en' => 'English',
+                            'es' => 'Español',
+                            'fr' => 'Français',
+                            'de' => 'Deutsch',
+                            'ar' => 'العربية',
+                            'zh' => '中文',
+                            'ja' => '日本語',
+                            'pt' => 'Português',
+                            'ru' => 'Русский',
+                            'hi' => 'हिन्दी'
+                        ];
+                        $currentLocale = app()->getLocale();
+                    @endphp
+                    @foreach($languages as $code => $name)
+                        <a href="{{ route('locale.switch', $code) }}" class="adomx-dropdown-item {{ $currentLocale === $code ? 'active' : '' }}">
+                            <i class="fas fa-{{ $currentLocale === $code ? 'check' : 'circle' }}" style="margin-right: 10px; opacity: {{ $currentLocale === $code ? '1' : '0' }};"></i>
+                            <span>{{ $name }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
 
             <!-- Messages -->

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(auth()->user()->isAdmin() || auth()->user()->isTeacher() ? 'layouts.admin' : 'layouts.main')
 
 @section('content')
 <div class="adomx-page-header">

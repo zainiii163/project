@@ -22,6 +22,13 @@ class Lesson extends Model
         'duration',
         'order',
         'is_preview',
+        'downloadable_materials',
+        'status',
+        'rejection_reason',
+    ];
+
+    protected $casts = [
+        'downloadable_materials' => 'array',
     ];
 
     public function course()

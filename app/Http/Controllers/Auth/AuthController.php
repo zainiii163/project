@@ -91,5 +91,18 @@ class AuthController extends Controller
             return route('student.dashboard');
         }
     }
+
+    public function showPasswordRequestForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function showPasswordResetForm(Request $request, $token = null)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->email,
+        ]);
+    }
 }
 

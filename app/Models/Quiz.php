@@ -22,6 +22,8 @@ class Quiz extends Model
         'max_attempts',
         'pass_score',
         'is_published',
+        'status',
+        'rejection_reason',
     ];
 
     public function course()

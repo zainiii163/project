@@ -19,6 +19,14 @@ class Discussion extends Model
         'message',
         'parent_id',
         'status',
+        'rejection_reason',
+        'is_pinned',
+        'is_locked',
+    ];
+
+    protected $casts = [
+        'is_pinned' => 'boolean',
+        'is_locked' => 'boolean',
     ];
 
     public function course()

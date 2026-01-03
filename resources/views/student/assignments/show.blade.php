@@ -49,9 +49,90 @@
             </div>
         @endif
 
+        @if(!$assignment->submitted_at)
+            <div class="adomx-card" style="margin-top: 20px;">
+                <div class="adomx-card-header">
+                    <h3>Submit Assignment</h3>
+                </div>
+                <div class="adomx-card-body">
+                    <form action="{{ route('student.assignments.submit', $assignment) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        @if($assignment->submission_type === 'text')
+                            <div class="adomx-form-group">
+                                <label for="content" class="adomx-label">Your Answer <span class="text-danger">*</span></label>
+                                <textarea id="content" name="content" class="adomx-form-control" rows="10" required>{{ old('content') }}</textarea>
+                                @error('content')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @elseif($assignment->submission_type === 'file')
+                            <div class="adomx-form-group">
+                                <label for="file" class="adomx-label">Upload File <span class="text-danger">*</span></label>
+                                <input type="file" id="file" name="file" class="adomx-form-control" accept=".pdf,.doc,.docx,.zip,.txt" required>
+                                <small>Accepted formats: PDF, DOC, DOCX, ZIP, TXT (Max: 10MB)</small>
+                                @error('file')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        @endif
+
+                        @if($assignment->due_date)
+                            <div class="adomx-alert adomx-alert-info" style="margin-bottom: 15px;">
+                                <i class="fas fa-calendar"></i>
+                                <strong>Due Date:</strong> {{ $assignment->due_date->format('M d, Y H:i') }}
+                                @if($assignment->due_date->isPast())
+                                    <span class="text-danger">(Overdue)</span>
+                                @endif
+                            </div>
+                        @endif
+
+                        <button type="submit" class="adomx-btn adomx-btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Assignment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endif
+
         @if($assignment->grade)
-            <div style="padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 3px solid var(--success-color);">
-                <strong>Grade:</strong> {{ $assignment->grade }}
+            <div class="adomx-card" style="margin-top: 20px;">
+                <div class="adomx-card-header">
+                    <h3>Grading Results</h3>
+                </div>
+                <div class="adomx-card-body">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <strong>Grade:</strong> 
+                            <span style="font-size: 24px; font-weight: bold; color: var(--primary-color);">{{ $assignment->grade }}</span>
+                        </div>
+                        @if($assignment->score)
+                        <div>
+                            <strong>Score:</strong> 
+                            <span style="font-size: 24px; font-weight: bold; color: var(--success-color);">
+                                {{ $assignment->score }} / {{ $assignment->max_score }}
+                            </span>
+                        </div>
+                        @endif
+                        @if($assignment->evaluation_type)
+                        <div>
+                            <strong>Evaluation Type:</strong> 
+                            <span class="adomx-status-badge adomx-status-{{ $assignment->evaluation_type }}">
+                                {{ ucfirst($assignment->evaluation_type) }}
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                    @if($assignment->feedback)
+                        <div>
+                            <strong>Feedback:</strong>
+                            <div style="margin-top: 10px; padding: 15px; background: var(--bg-secondary); border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                                {{ $assignment->feedback }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
         @endif
     </div>

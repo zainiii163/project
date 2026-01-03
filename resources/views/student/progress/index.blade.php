@@ -5,6 +5,12 @@
     <div class="adomx-page-title">
         <h2>My Learning Progress</h2>
     </div>
+    <div class="adomx-page-actions">
+        <a href="{{ route('student.progress.dashboard') }}" class="adomx-btn adomx-btn-primary">
+            <i class="fas fa-chart-line"></i>
+            View Dashboard
+        </a>
+    </div>
 </div>
 
 <div class="adomx-table-card">

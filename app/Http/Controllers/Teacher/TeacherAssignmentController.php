@@ -57,11 +57,20 @@ class TeacherAssignmentController extends Controller
         }
 
         $validated = $request->validate([
-            'grade' => 'required|string|max:255',
+            'grade' => 'required_if:evaluation_type,manual|string|max:255',
             'feedback' => 'nullable|string',
+            'evaluation_type' => 'required|in:manual,automated',
+            'score' => 'nullable|numeric|min:0|max:' . $assignment->max_score,
+            'auto_evaluate' => 'nullable|boolean',
+            'min_words' => 'nullable|integer|min:0',
         ]);
 
-        $assignment->update($validated);
+        // If automated evaluation, calculate score based on criteria
+        if ($validated['evaluation_type'] === 'automated' && $request->has('auto_evaluate')) {
+            $score = $this->automatedEvaluation($assignment, $request);
+            $validated['score'] = $score;
+            $validated['grade'] = $this->calculateGrade($score, $assignment->max_score);
+        }
 
         $assignment->update($validated);
 
@@ -71,6 +80,44 @@ class TeacherAssignmentController extends Controller
         // }
 
         return back()->with('success', 'Assignment graded successfully!');
+    }
+
+    private function automatedEvaluation(Assignment $assignment, Request $request)
+    {
+        // Automated evaluation logic based on assignment type
+        $score = 0;
+        
+        // Example: For code assignments, check syntax, test cases, etc.
+        // For text assignments, check word count, keywords, etc.
+        // This is a placeholder - implement based on your specific needs
+        
+        if ($assignment->submission_type === 'text') {
+            $content = $assignment->content ?? '';
+            $wordCount = str_word_count($content);
+            $minWords = $request->get('min_words', 100);
+            
+            if ($wordCount >= $minWords) {
+                $score = $assignment->max_score * 0.7; // Base score for meeting requirements
+            }
+        }
+        
+        return $score;
+    }
+
+    private function calculateGrade($score, $maxScore)
+    {
+        $percentage = ($score / $maxScore) * 100;
+        
+        if ($percentage >= 90) return 'A+';
+        if ($percentage >= 85) return 'A';
+        if ($percentage >= 80) return 'A-';
+        if ($percentage >= 75) return 'B+';
+        if ($percentage >= 70) return 'B';
+        if ($percentage >= 65) return 'B-';
+        if ($percentage >= 60) return 'C+';
+        if ($percentage >= 55) return 'C';
+        if ($percentage >= 50) return 'C-';
+        return 'F';
     }
 
     public function create(Course $course)

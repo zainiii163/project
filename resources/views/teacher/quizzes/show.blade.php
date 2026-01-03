@@ -10,6 +10,10 @@
             <i class="fas fa-arrow-left"></i>
             Back
         </a>
+        <a href="{{ route('teacher.quizzes.analytics', $quiz) }}" class="adomx-btn adomx-btn-primary">
+            <i class="fas fa-chart-line"></i>
+            View Analytics
+        </a>
     </div>
 </div>
 

@@ -39,10 +39,15 @@
 
             <!-- My Progress -->
             <li class="adomx-nav-item {{ request()->routeIs('student.progress.*') ? 'active' : '' }}">
-                <a href="{{ route('student.progress.index') }}" class="adomx-nav-link">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
                     <i class="fas fa-chart-line"></i>
                     <span>My Progress</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
                 </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('student.progress.index') }}" class="{{ request()->routeIs('student.progress.index') ? 'active' : '' }}">Progress Overview</a></li>
+                    <li><a href="{{ route('student.progress.dashboard') }}" class="{{ request()->routeIs('student.progress.dashboard') ? 'active' : '' }}">Analytics Dashboard</a></li>
+                </ul>
             </li>
 
             <!-- My Assignments -->
@@ -106,8 +111,15 @@
                 <ul class="adomx-nav-submenu">
                     <li><a href="{{ route('student.payments.history') }}" class="{{ request()->routeIs('student.payments.history') ? 'active' : '' }}">Transaction History</a></li>
                     <li><a href="{{ route('student.payments.invoices') }}" class="{{ request()->routeIs('student.payments.invoices') || request()->routeIs('student.payments.invoices.download') ? 'active' : '' }}">Invoices</a></li>
-                    <li><a href="{{ route('student.payments.subscriptions') }}" class="{{ request()->routeIs('student.payments.subscriptions') || request()->routeIs('student.payments.subscriptions.purchase') ? 'active' : '' }}">Subscriptions</a></li>
                 </ul>
+            </li>
+
+            <!-- Subscriptions -->
+            <li class="adomx-nav-item {{ request()->routeIs('subscriptions.*') ? 'active' : '' }}">
+                <a href="{{ route('subscriptions.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-crown"></i>
+                    <span>Subscriptions</span>
+                </a>
             </li>
 
             <!-- Browse Courses -->
@@ -119,10 +131,69 @@
             </li>
 
             <!-- Blog -->
-            <li class="adomx-nav-item {{ request()->routeIs('blog.*') ? 'active' : '' }}">
-                <a href="{{ route('blog.index') }}" class="adomx-nav-link">
+            <li class="adomx-nav-item {{ request()->routeIs('blog.*') || request()->routeIs('student.blog.*') ? 'active' : '' }}">
+                <a href="{{ route('student.blog.index') }}" class="adomx-nav-link">
                     <i class="fas fa-newspaper"></i>
                     <span>Blog</span>
+                </a>
+            </li>
+
+            <!-- Gamification -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.gamification.*') || request()->routeIs('gamification.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-trophy"></i>
+                    <span>Gamification</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('student.gamification.leaderboard') }}" class="{{ request()->routeIs('student.gamification.leaderboard') ? 'active' : '' }}">Leaderboard</a></li>
+                    <li><a href="{{ route('student.gamification.badges') }}" class="{{ request()->routeIs('student.gamification.badges') ? 'active' : '' }}">My Badges</a></li>
+                    <li><a href="{{ route('student.gamification.my-progress') }}" class="{{ request()->routeIs('student.gamification.my-progress') ? 'active' : '' }}">My Progress</a></li>
+                </ul>
+            </li>
+
+            <!-- Live Sessions -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.live-sessions.*') || request()->routeIs('live-sessions.*') ? 'active' : '' }}">
+                <a href="{{ route('student.live-sessions.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-video"></i>
+                    <span>Live Sessions</span>
+                </a>
+            </li>
+
+            <!-- Calendar -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.calendar.*') || request()->routeIs('calendar.*') ? 'active' : '' }}">
+                <a href="{{ route('student.calendar.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-calendar"></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+
+            <!-- Support & Helpdesk -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.support.*') || request()->routeIs('support.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('student.support.index') }}" class="{{ request()->routeIs('student.support.index') ? 'active' : '' }}">My Tickets</a></li>
+                    <li><a href="{{ route('student.support.create') }}" class="{{ request()->routeIs('student.support.create') ? 'active' : '' }}">Create Ticket</a></li>
+                </ul>
+            </li>
+
+            <!-- Referrals -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.referrals.*') || request()->routeIs('referrals.*') ? 'active' : '' }}">
+                <a href="{{ route('student.referrals.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Referrals</span>
+                </a>
+            </li>
+
+            <!-- Notifications -->
+            <li class="adomx-nav-item {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <a href="{{ route('notifications.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
                 </a>
             </li>
 
@@ -132,6 +203,56 @@
                     <i class="fas fa-bullhorn"></i>
                     <span>Announcements</span>
                 </a>
+            </li>
+
+            <!-- Offline Access -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.offline.*') || request()->routeIs('offline.*') ? 'active' : '' }}">
+                <a href="{{ route('student.offline.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-download"></i>
+                    <span>Offline Access</span>
+                </a>
+            </li>
+
+            <!-- Surveys -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.surveys.*') || request()->routeIs('surveys.*') ? 'active' : '' }}">
+                <a href="{{ route('student.surveys.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-poll"></i>
+                    <span>Surveys</span>
+                </a>
+            </li>
+
+            <!-- Feedback -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.feedback.*') || request()->routeIs('feedback.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Feedback</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('student.feedback.index') }}" class="{{ request()->routeIs('student.feedback.index') ? 'active' : '' }}">My Feedback</a></li>
+                    <li><a href="{{ route('student.feedback.create') }}" class="{{ request()->routeIs('student.feedback.create') ? 'active' : '' }}">Submit Feedback</a></li>
+                </ul>
+            </li>
+
+            <!-- Resources -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.resources.*') || request()->routeIs('resources.*') ? 'active' : '' }}">
+                <a href="{{ route('student.resources.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Resource Library</span>
+                </a>
+            </li>
+
+            <!-- Profile -->
+            <li class="adomx-nav-item {{ request()->routeIs('student.profile.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('student.profile.show') }}" class="{{ request()->routeIs('student.profile.show') ? 'active' : '' }}">View Profile</a></li>
+                    <li><a href="{{ route('student.profile.edit') }}" class="{{ request()->routeIs('student.profile.edit') ? 'active' : '' }}">Edit Profile</a></li>
+                </ul>
             </li>
         </ul>
     </nav>

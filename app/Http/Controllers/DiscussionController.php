@@ -18,10 +18,16 @@ class DiscussionController extends Controller
                 ->with('error', 'You must enroll in this course to participate in discussions.');
         }
 
-        $discussions = $course->discussions()
+        $query = $course->discussions()
             ->whereNull('parent_id')
-            ->with(['user', 'replies.user'])
-            ->latest()
+            ->where('status', 'approved'); // Only show approved discussions
+
+        // Show pinned discussions first
+        $discussions = $query->orderBy('is_pinned', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->with(['user', 'replies' => function($q) {
+                $q->where('status', 'approved')->with('user');
+            }])
             ->paginate(20);
 
         return view('discussions.index', compact('course', 'discussions'));
@@ -31,16 +37,49 @@ class DiscussionController extends Controller
     {
         $this->authorize('view', $course);
 
+        // Check if discussion is locked
+        if ($request->has('parent_id')) {
+            $parentDiscussion = \App\Models\Discussion::find($request->parent_id);
+            if ($parentDiscussion && $parentDiscussion->is_locked) {
+                return back()->with('error', 'This discussion is locked. No new replies can be added.');
+            }
+        }
+
         $validated = $request->validate([
             'message' => 'required|string|max:2000',
             'parent_id' => 'nullable|exists:discussions,id',
         ]);
 
-        $course->discussions()->create([
+        // Set status based on moderation settings (pending if moderation enabled)
+        $status = 'approved'; // Default to approved, can be changed based on settings
+        // if (setting('discussions.require_moderation', false)) {
+        //     $status = 'pending';
+        // }
+
+        $discussion = $course->discussions()->create([
             'user_id' => auth()->id(),
             'message' => $validated['message'],
             'parent_id' => $validated['parent_id'] ?? null,
+            'status' => $status,
         ]);
+
+        // Notify course teacher if it's a question (parent discussion)
+        if (!$validated['parent_id'] && $course->teacher) {
+            \App\Models\Notification::create([
+                'user_id' => $course->teacher_id,
+                'type' => 'new_discussion',
+                'title' => 'New Discussion in ' . $course->title,
+                'message' => auth()->user()->name . ' started a new discussion',
+                'data' => [
+                    'discussion_id' => $discussion->id,
+                    'course_id' => $course->id,
+                ],
+            ]);
+        }
+
+        if ($status === 'pending') {
+            return back()->with('info', 'Discussion submitted and pending approval.');
+        }
 
         return back()->with('success', 'Discussion posted successfully!');
     }

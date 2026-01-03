@@ -247,10 +247,87 @@
                             {{ $review->comment }}
                         </p>
                     @endif
+                    @if($review->teacher_response)
+                        <div style="margin-top: 15px; padding: 15px; background: var(--bg-secondary); border-left: 3px solid var(--primary-color); border-radius: 4px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <strong style="color: var(--primary-color);">
+                                    <i class="fas fa-reply"></i> Teacher Response
+                                </strong>
+                                <small class="text-muted">
+                                    {{ $review->teacher_response_at->format('M d, Y') }}
+                                </small>
+                            </div>
+                            <p style="margin: 0; color: var(--text-primary); line-height: 1.6;">
+                                {{ $review->teacher_response }}
+                            </p>
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>
     </div>
 @endif
+
+<!-- Review Form (for enrolled students) -->
+@auth
+@if($isEnrolled && !$course->reviews()->where('user_id', auth()->id())->exists())
+<div class="adomx-card">
+    <div class="adomx-card-header">
+        <h3>Write a Review</h3>
+    </div>
+    <div class="adomx-card-body">
+        <form action="{{ route('reviews.store', $course) }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="rating">Rating <span class="text-danger">*</span></label>
+                <div class="rating-input" style="display: flex; gap: 5px; font-size: 24px; margin: 10px 0;">
+                    @for($i = 5; $i >= 1; $i--)
+                    <input type="radio" name="rating" id="rating-{{ $i }}" value="{{ $i }}" {{ old('rating') == $i ? 'checked' : '' }} required style="display: none;">
+                    <label for="rating-{{ $i }}" style="cursor: pointer; color: #e5e7eb;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='#e5e7eb'">
+                        <i class="fas fa-star"></i>
+                    </label>
+                    @endfor
+                </div>
+                @error('rating')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label for="comment">Your Review</label>
+                <textarea name="comment" id="comment" class="form-control" rows="5" placeholder="Share your experience with this course...">{{ old('comment') }}</textarea>
+                <small class="form-text text-muted">Your review helps other students make informed decisions.</small>
+                @error('comment')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+            <button type="submit" class="adomx-btn adomx-btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Review
+            </button>
+        </form>
+    </div>
+</div>
+@endif
+@endauth
 @endsection
+
+@push('scripts')
+<script>
+    // Rating input interaction
+    document.querySelectorAll('input[name="rating"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const rating = parseInt(this.value);
+            const labels = document.querySelectorAll('.rating-input label');
+            labels.forEach((label, index) => {
+                const starIndex = 5 - index;
+                const icon = label.querySelector('i');
+                if (starIndex <= rating) {
+                    icon.style.color = '#fbbf24';
+                } else {
+                    icon.style.color = '#e5e7eb';
+                }
+            });
+        });
+    });
+</script>
+@endpush
 

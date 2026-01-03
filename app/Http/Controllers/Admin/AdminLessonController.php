@@ -79,6 +79,12 @@ class AdminLessonController extends Controller
             ->with('success', 'Lesson updated successfully!');
     }
 
+    public function show(Lesson $lesson)
+    {
+        $lesson->load(['course', 'quiz.questions.options']);
+        return view('admin.lessons.show', compact('lesson'));
+    }
+
     public function destroy(Lesson $lesson)
     {
         $lesson->delete();

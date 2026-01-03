@@ -111,7 +111,7 @@ class TeacherCourseController extends Controller
 
         $validated['teacher_id'] = $teacher->id;
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']);
-        $validated['status'] = 'draft'; // Requires admin approval
+        $validated['status'] = 'pending_approval'; // Requires admin approval
 
         if ($request->hasFile('thumbnail')) {
             $validated['thumbnail'] = $request->file('thumbnail')->store('courses', 'public');

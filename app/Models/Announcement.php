@@ -19,6 +19,7 @@ class Announcement extends Model
         'scope',
         'course_id',
         'user_id',
+        'priority',
     ];
 
     public function course()

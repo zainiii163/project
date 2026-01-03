@@ -28,6 +28,12 @@ class User extends Authenticatable
         'last_login',
         'password_changed_at',
         'approved_at',
+        'xp_points',
+        'level',
+        'referral_code',
+        'referred_by',
+        'bio',
+        'phone',
     ];
 
     protected $hidden = [
@@ -43,6 +49,8 @@ class User extends Authenticatable
         'password_changed_at' => 'datetime',
         'approved_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'xp_points' => 'integer',
+        'level' => 'integer',
     ];
 
     // Relationships
@@ -123,6 +131,70 @@ class User extends Authenticatable
     public function lessonProgress()
     {
         return $this->hasMany(LessonProgress::class);
+    }
+
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')
+            ->withPivot('course_id', 'earned_at')
+            ->withTimestamps();
+    }
+
+    public function xpTransactions()
+    {
+        return $this->hasMany(XpTransaction::class);
+    }
+
+    public function liveSessions()
+    {
+        return $this->hasMany(LiveSession::class, 'teacher_id');
+    }
+
+    public function calendarEvents()
+    {
+        return $this->hasMany(CalendarEvent::class);
+    }
+
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    public function assignedTickets()
+    {
+        return $this->hasMany(SupportTicket::class, 'assigned_to');
+    }
+
+    // Referral relationships (using Referral model)
+    public function referrals()
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
+    public function referredBy()
+    {
+        return $this->hasOne(Referral::class, 'referred_id');
+    }
+
+    // Self-referencing relationship for referred users (using User model)
+    public function referredUsers()
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function commissions()
+    {
+        return $this->hasMany(Commission::class, 'teacher_id');
+    }
+
+    public function payouts()
+    {
+        return $this->hasMany(Payout::class, 'teacher_id');
     }
 
     // Helper methods

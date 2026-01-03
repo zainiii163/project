@@ -141,6 +141,18 @@ class QuizController extends Controller
             'status' => $passed ? 'completed' : 'failed',
         ]);
 
+        // Award XP if quiz passed
+        if ($passed) {
+            $xpPoints = max(20, (int)($percentage / 5)); // 20-100 XP based on score
+            $gamificationController = new \App\Http\Controllers\GamificationController();
+            $gamificationController->awardXp(
+                auth()->user(),
+                $xpPoints,
+                $quiz,
+                'Passed quiz: ' . $quiz->title . ' (Score: ' . round($percentage, 1) . '%)'
+            );
+        }
+
         return redirect()->route('quizzes.result', $attempt)
             ->with('success', 'Quiz submitted successfully!');
     }

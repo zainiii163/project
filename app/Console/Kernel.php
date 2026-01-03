@@ -12,7 +12,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Process recurring subscription billing daily
+        $schedule->command('subscriptions:process-billing')->daily();
+        
+        // Check and expire subscriptions
+        $schedule->call(function () {
+            \App\Models\Subscription::where('status', 'active')
+                ->where('end_date', '<', now())
+                ->update(['status' => 'expired']);
+        })->daily();
     }
 
     /**

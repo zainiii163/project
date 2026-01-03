@@ -290,15 +290,20 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Quick Actions - All Features -->
     <div class="adomx-col-md-12">
         <div class="adomx-card">
             <div class="adomx-card-header">
-                <h3>Quick Actions</h3>
+                <h3>Quick Actions - All Features</h3>
             </div>
             <div class="adomx-card-body">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <a href="{{ route('courses.index') }}" class="adomx-btn adomx-btn-primary" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <!-- Courses -->
+                    <a href="{{ route('student.courses.index') }}" class="adomx-btn adomx-btn-primary" style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-book" style="font-size: 32px;"></i>
+                        <span>My Courses</span>
+                    </a>
+                    <a href="{{ route('courses.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-search" style="font-size: 32px;"></i>
                         <span>Browse Courses</span>
                     </a>
@@ -306,13 +311,113 @@
                         <i class="fas fa-lightbulb" style="font-size: 32px;"></i>
                         <span>Recommendations</span>
                     </a>
+                    <a href="{{ route('student.courses.learning-path') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-route" style="font-size: 32px;"></i>
+                        <span>Learning Path</span>
+                    </a>
+                    
+                    <!-- Learning -->
                     <a href="{{ route('student.progress.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-chart-line" style="font-size: 32px;"></i>
                         <span>My Progress</span>
                     </a>
+                    <a href="{{ route('student.progress.dashboard') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-chart-bar" style="font-size: 32px;"></i>
+                        <span>Progress Dashboard</span>
+                    </a>
+                    <a href="{{ route('student.assignments.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-tasks" style="font-size: 32px;"></i>
+                        <span>Assignments</span>
+                    </a>
+                    <a href="{{ route('student.quizzes.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-question-circle" style="font-size: 32px;"></i>
+                        <span>Quizzes</span>
+                    </a>
+                    
+                    <!-- Achievements -->
                     <a href="{{ route('student.certificates.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <i class="fas fa-certificate" style="font-size: 32px;"></i>
-                        <span>My Certificates</span>
+                        <span>Certificates</span>
+                    </a>
+                    <a href="{{ route('student.gamification.leaderboard') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-trophy" style="font-size: 32px;"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                    <a href="{{ route('student.gamification.badges') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-medal" style="font-size: 32px;"></i>
+                        <span>Badges</span>
+                    </a>
+                    <a href="{{ route('student.gamification.my-progress') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-chart-pie" style="font-size: 32px;"></i>
+                        <span>My Gamification</span>
+                    </a>
+                    
+                    <!-- Community -->
+                    <a href="{{ route('student.courses.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-comments" style="font-size: 32px;"></i>
+                        <span>Discussions</span>
+                    </a>
+                    <a href="{{ route('student.reviews.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-star" style="font-size: 32px;"></i>
+                        <span>My Reviews</span>
+                    </a>
+                    
+                    <!-- Features -->
+                    <a href="{{ route('student.live-sessions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-video" style="font-size: 32px;"></i>
+                        <span>Live Sessions</span>
+                    </a>
+                    <a href="{{ route('student.calendar.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-calendar" style="font-size: 32px;"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="{{ route('student.support.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-headset" style="font-size: 32px;"></i>
+                        <span>Support</span>
+                    </a>
+                    <a href="{{ route('student.referrals.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-user-friends" style="font-size: 32px;"></i>
+                        <span>Referrals</span>
+                    </a>
+                    <a href="{{ route('student.notifications.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-bell" style="font-size: 32px;"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="{{ route('announcements.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-bullhorn" style="font-size: 32px;"></i>
+                        <span>Announcements</span>
+                    </a>
+                    
+                    <!-- Payments & Subscriptions -->
+                    <a href="{{ route('student.payments.history') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-history" style="font-size: 32px;"></i>
+                        <span>Payment History</span>
+                    </a>
+                    <a href="{{ route('student.payments.invoices') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-file-invoice" style="font-size: 32px;"></i>
+                        <span>Invoices</span>
+                    </a>
+                    <a href="{{ route('student.subscriptions.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-sync-alt" style="font-size: 32px;"></i>
+                        <span>Subscriptions</span>
+                    </a>
+                    
+                    <!-- Resources -->
+                    <a href="{{ route('student.resources.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-folder-open" style="font-size: 32px;"></i>
+                        <span>Resources</span>
+                    </a>
+                    <a href="{{ route('student.offline.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-download" style="font-size: 32px;"></i>
+                        <span>Offline Access</span>
+                    </a>
+                    <a href="{{ route('student.surveys.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-poll" style="font-size: 32px;"></i>
+                        <span>Surveys</span>
+                    </a>
+                    <a href="{{ route('student.feedback.index') }}" class="adomx-btn" style="background: var(--dark-bg-light); color: var(--text-primary); padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <i class="fas fa-comment-dots" style="font-size: 32px;"></i>
+                        <span>Feedback</span>
                     </a>
                 </div>
             </div>

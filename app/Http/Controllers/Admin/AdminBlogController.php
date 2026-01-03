@@ -76,6 +76,12 @@ class AdminBlogController extends Controller
             ->with('success', 'Blog post created successfully!');
     }
 
+    public function show(BlogPost $post)
+    {
+        $post->load(['author', 'category', 'tags']);
+        return view('admin.blog.show', compact('post'));
+    }
+
     public function edit(BlogPost $post)
     {
         $categories = Category::all();

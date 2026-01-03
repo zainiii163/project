@@ -19,6 +19,12 @@ class Review extends Model
         'rating',
         'comment',
         'status',
+        'teacher_response',
+        'teacher_response_at',
+    ];
+
+    protected $casts = [
+        'teacher_response_at' => 'datetime',
     ];
 
     public function course()

@@ -185,18 +185,74 @@ class AdminPaymentController extends Controller
         $this->authorize('update', $order);
 
         $validated = $request->validate([
-            'amount' => 'nullable|numeric|min:0',
+            'amount' => 'nullable|numeric|min:0|max:' . $order->total_price,
             'reason' => 'required|string|max:1000',
+            'refund_type' => 'required|in:full,partial',
         ]);
 
         $refundAmount = $validated['amount'] ?? $order->total_price;
+        
+        if ($validated['refund_type'] === 'full') {
+            $refundAmount = $order->total_price;
+        }
 
-        // Process refund through payment gateway
-        // This is a placeholder - implement actual refund logic
+        DB::beginTransaction();
+        try {
+            // Process refund through payment gateway
+            $transaction = $order->transaction;
+            if ($transaction) {
+                // Integrate with payment gateway (Stripe, PayPal, etc.)
+                // Example: Stripe refund
+                // \Stripe\Refund::create([
+                //     'charge' => $transaction->transaction_id,
+                //     'amount' => $refundAmount * 100, // Convert to cents
+                // ]);
+                
+                // Create refund transaction record
+                Transaction::create([
+                    'order_id' => $order->id,
+                    'payment_method' => $transaction->payment_method,
+                    'amount' => -$refundAmount, // Negative for refund
+                    'status' => 'completed',
+                    'transaction_date' => now(),
+                    'transaction_id' => 'refund_' . uniqid(),
+                    'notes' => 'Refund: ' . $validated['reason'],
+                ]);
+            }
 
-        $order->update(['status' => 'refunded']);
+            // Update order status
+            if ($refundAmount >= $order->total_price) {
+                $order->update(['status' => 'refunded']);
+            } else {
+                $order->update(['status' => 'partially_refunded']);
+            }
 
-        return back()->with('success', 'Refund processed successfully!');
+            // Refund to wallet if applicable
+            if ($transaction && $transaction->payment_method === 'wallet') {
+                $wallet = $order->user->wallet;
+                if ($wallet) {
+                    $wallet->credit($refundAmount);
+                }
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Refund processed successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Refund failed: ' . $e->getMessage());
+        }
+    }
+
+    public function generateInvoice(Order $order)
+    {
+        $this->authorize('view', $order);
+        
+        $order->load(['user', 'items.course', 'transaction']);
+        
+        // Generate PDF invoice using DomPDF or similar
+        // For now, return view - implement PDF generation as needed
+        return view('admin.orders.invoice', compact('order'));
     }
 
     public function revenueReport(Request $request)
@@ -332,6 +388,49 @@ class AdminPaymentController extends Controller
         $totalEarnings = $payments->where('status', 'completed')->sum('total_price') * 0.70; // Assuming 70% commission
 
         return view('admin.payments.teacher-payments', compact('teacher', 'payments', 'totalEarnings'));
+    }
+
+    public function studentPayments(Request $request)
+    {
+        $this->authorize('viewAny', Order::class);
+
+        $query = User::where('role', 'student')->withCount(['orders as total_spent' => function($q) {
+            $q->where('status', 'completed')->selectRaw('COALESCE(SUM(total_price), 0)');
+        }]);
+
+        if ($request->has('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $students = $query->orderByDesc('total_spent')->paginate(20);
+
+        return view('admin.payments.student-payments', compact('students'));
+    }
+
+    public function teacherPayments(Request $request)
+    {
+        $this->authorize('viewAny', Order::class);
+
+        $query = User::where('role', 'teacher')->withCount(['taughtCourses as total_earnings' => function($q) {
+            $q->join('order_items', 'courses.id', '=', 'order_items.course_id')
+              ->join('orders', 'order_items.order_id', '=', 'orders.id')
+              ->where('orders.status', 'completed')
+              ->selectRaw('COALESCE(SUM(order_items.price * order_items.quantity * 0.70), 0)');
+        }]);
+
+        if ($request->has('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $teachers = $query->orderByDesc('total_earnings')->paginate(20);
+
+        return view('admin.payments.teacher-payments', compact('teachers'));
     }
 }
 

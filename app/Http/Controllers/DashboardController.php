@@ -12,6 +12,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\CommissionService;
 
 class DashboardController extends Controller
 {
@@ -184,8 +185,23 @@ class DashboardController extends Controller
 
         // Average course rating
         $avgRating = Review::whereIn('course_id', $courseIds)
-            ->where('approved', true)
+            ->where('status', 'approved')
             ->avg('rating') ?? 0;
+
+        // Commission and payout statistics
+        $commissionService = new \App\Services\CommissionService();
+        $pendingEarnings = $commissionService->getPendingEarnings($teacher->id);
+        $totalEarnings = $commissionService->getTotalEarnings($teacher->id);
+        $totalPayouts = \App\Models\Payout::where('teacher_id', $teacher->id)
+            ->where('status', 'completed')
+            ->sum('amount') ?? 0;
+
+        // Recent commissions
+        $recentCommissions = \App\Models\Commission::where('teacher_id', $teacher->id)
+            ->with(['order', 'course'])
+            ->latest()
+            ->take(10)
+            ->get();
 
         $courses = $teacherCourses->with('category')->latest()->take(10)->get();
 
@@ -195,7 +211,11 @@ class DashboardController extends Controller
             'revenue', 
             'recentEnrollments', 
             'performanceData',
-            'avgRating'
+            'avgRating',
+            'pendingEarnings',
+            'totalEarnings',
+            'totalPayouts',
+            'recentCommissions'
         ));
     }
 

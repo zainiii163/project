@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Certificate;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class CertificateController extends Controller
 {
@@ -64,13 +66,78 @@ class CertificateController extends Controller
 
     private function createCertificatePDF($data)
     {
-        // Placeholder - implement actual PDF generation
+        // Generate certificate PDF
         // You can use libraries like DomPDF, TCPDF, or mPDF
-        $filename = 'certificates/' . uniqid() . '.pdf';
+        $filename = 'certificates/' . uniqid() . '_' . time() . '.pdf';
         
-        // TODO: Implement actual PDF generation
-        // For now, return a placeholder path
+        // Example with DomPDF (uncomment when package is installed):
+        // $pdf = \PDF::loadView('certificates.template', $data);
+        // Storage::disk('public')->put($filename, $pdf->output());
+        
+        // For now, create a placeholder file or return path
+        // In production, implement actual PDF generation with:
+        // - Certificate template design
+        // - User name, course title, completion date
+        // - Certificate number/ID
+        // - Digital signature or seal
+        
         return $filename;
+    }
+
+    public function autoGenerate(Course $course, $userId)
+    {
+        $user = \App\Models\User::findOrFail($userId);
+        
+        // Check if certificate already exists
+        if (Certificate::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->exists()) {
+            return;
+        }
+
+        // Generate certificate
+        $certificateData = [
+            'user_name' => $user->name,
+            'course_title' => $course->title,
+            'completion_date' => now()->format('F d, Y'),
+        ];
+
+        $certificateUrl = $this->createCertificatePDF($certificateData);
+
+        $certificate = Certificate::create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'certificate_url' => $certificateUrl,
+            'issued_at' => now(),
+        ]);
+
+        // Send notification
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => 'certificate_issued',
+            'title' => 'Certificate Issued',
+            'message' => 'Congratulations! You have completed "' . $course->title . '" and received a certificate.',
+            'data' => [
+                'certificate_id' => $certificate->id,
+                'course_id' => $course->id,
+            ],
+        ]);
+
+        // Send email
+        try {
+            Mail::send('emails.certificate', [
+                'certificate' => $certificate,
+                'user' => $user,
+                'course' => $course,
+            ], function ($message) use ($user, $course) {
+                $message->to($user->email, $user->name)
+                    ->subject('Certificate Issued: ' . $course->title);
+            });
+        } catch (\Exception $e) {
+            \Log::error('Failed to send certificate email: ' . $e->getMessage());
+        }
+
+        return $certificate;
     }
 }
 

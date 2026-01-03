@@ -25,7 +25,9 @@ class Assignment extends Model
         'submission_type',
         'max_score',
         'grade',
+        'score',
         'feedback',
+        'evaluation_type',
     ];
 
     protected $casts = [

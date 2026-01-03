@@ -184,6 +184,13 @@
                     <span>Q&A & Discussions</span>
                 </a>
             </li>
+
+            <li class="adomx-nav-item {{ request()->routeIs('teacher.payments.*') ? 'active' : '' }}">
+                <a href="{{ route('teacher.payments.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Payments & Earnings</span>
+                </a>
+            </li>
             @elseif(auth()->user()->isStudent())
             <!-- Student Panel -->
             <li class="adomx-nav-item {{ request()->routeIs('student.courses.*') ? 'active' : '' }}">
@@ -256,6 +263,20 @@
                 <a href="{{ route('student.reviews.index') }}" class="adomx-nav-link">
                     <i class="fas fa-star"></i>
                     <span>My Reviews</span>
+                </a>
+            </li>
+
+            <li class="adomx-nav-item {{ request()->routeIs('student.support.*') || request()->routeIs('support.*') ? 'active' : '' }}">
+                <a href="{{ route('support.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-headset"></i>
+                    <span>Support & Help</span>
+                </a>
+            </li>
+
+            <li class="adomx-nav-item {{ request()->routeIs('student.referrals.*') || request()->routeIs('referrals.*') ? 'active' : '' }}">
+                <a href="{{ route('referrals.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Referrals</span>
                 </a>
             </li>
             @else
@@ -432,6 +453,141 @@
                     <li><a href="{{ route('admin.settings.security') }}" class="{{ request()->routeIs('admin.settings.security') ? 'active' : '' }}">Security</a></li>
                     <li><a href="{{ route('admin.settings.backup') }}" class="{{ request()->routeIs('admin.settings.backup') ? 'active' : '' }}">Backup</a></li>
                 </ul>
+            </li>
+
+            <!-- Gamification -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.gamification.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-trophy"></i>
+                    <span>Gamification</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.gamification.index') }}" class="{{ request()->routeIs('admin.gamification.index') ? 'active' : '' }}">Badges</a></li>
+                    <li><a href="{{ route('admin.gamification.create') }}" class="{{ request()->routeIs('admin.gamification.create') ? 'active' : '' }}">Create Badge</a></li>
+                    <li><a href="{{ route('admin.gamification.leaderboard') }}" class="{{ request()->routeIs('admin.gamification.leaderboard') ? 'active' : '' }}">Leaderboard</a></li>
+                </ul>
+            </li>
+
+            <!-- Live Sessions -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.live-sessions.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-video"></i>
+                    <span>Live Sessions</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.live-sessions.index') }}" class="{{ request()->routeIs('admin.live-sessions.index') ? 'active' : '' }}">All Sessions</a></li>
+                    <li><a href="{{ route('admin.live-sessions.create') }}" class="{{ request()->routeIs('admin.live-sessions.create') ? 'active' : '' }}">Create Session</a></li>
+                </ul>
+            </li>
+
+            <!-- Calendar -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.calendar.*') || request()->routeIs('calendar.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.calendar.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-calendar"></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+
+            <!-- Support & Helpdesk -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.support.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-headset"></i>
+                    <span>Support & Helpdesk</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.support.index') }}" class="{{ request()->routeIs('admin.support.index') ? 'active' : '' }}">All Tickets</a></li>
+                    <li><a href="{{ route('admin.support.analytics') }}" class="{{ request()->routeIs('admin.support.analytics') ? 'active' : '' }}">Analytics</a></li>
+                </ul>
+            </li>
+
+            <!-- Reporting -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.index') ? 'active' : '' }}">All Reports</a></li>
+                    <li><a href="{{ route('admin.reports.enrollments') }}" class="{{ request()->routeIs('admin.reports.enrollments') ? 'active' : '' }}">Enrollments</a></li>
+                    <li><a href="{{ route('admin.reports.revenue') }}" class="{{ request()->routeIs('admin.reports.revenue') ? 'active' : '' }}">Revenue</a></li>
+                    <li><a href="{{ route('admin.reports.users') }}" class="{{ request()->routeIs('admin.reports.users') ? 'active' : '' }}">Users</a></li>
+                    <li><a href="{{ route('admin.reports.courses') }}" class="{{ request()->routeIs('admin.reports.courses') ? 'active' : '' }}">Courses</a></li>
+                </ul>
+            </li>
+
+            <!-- SEO & Marketing -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.seo.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.seo.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-search"></i>
+                    <span>SEO & Marketing</span>
+                </a>
+            </li>
+
+            <!-- Payouts & Commissions -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.payouts.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Payouts & Commissions</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.payouts.index') }}" class="{{ request()->routeIs('admin.payouts.index') ? 'active' : '' }}">All Payouts</a></li>
+                    <li><a href="{{ route('admin.payouts.create') }}" class="{{ request()->routeIs('admin.payouts.create') ? 'active' : '' }}">Create Payout</a></li>
+                </ul>
+            </li>
+
+            <!-- Membership Plans -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.membership-plans.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-crown"></i>
+                    <span>Membership Plans</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.membership-plans.index') }}" class="{{ request()->routeIs('admin.membership-plans.index') ? 'active' : '' }}">All Plans</a></li>
+                    <li><a href="{{ route('admin.membership-plans.create') }}" class="{{ request()->routeIs('admin.membership-plans.create') ? 'active' : '' }}">Create Plan</a></li>
+                </ul>
+            </li>
+
+            <!-- Content Moderation -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.moderation.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.moderation.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Content Moderation</span>
+                </a>
+            </li>
+
+            <!-- Surveys -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.surveys.*') ? 'active' : '' }}">
+                <a href="javascript:void(0);" class="adomx-nav-link adomx-nav-toggle">
+                    <i class="fas fa-poll"></i>
+                    <span>Surveys</span>
+                    <i class="fas fa-chevron-down adomx-nav-arrow"></i>
+                </a>
+                <ul class="adomx-nav-submenu">
+                    <li><a href="{{ route('admin.surveys.index') }}" class="{{ request()->routeIs('admin.surveys.index') ? 'active' : '' }}">All Surveys</a></li>
+                    <li><a href="{{ route('admin.surveys.create') }}" class="{{ request()->routeIs('admin.surveys.create') ? 'active' : '' }}">Create Survey</a></li>
+                </ul>
+            </li>
+
+            <!-- Feedback -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.feedback.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.feedback.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Feedback</span>
+                </a>
+            </li>
+
+            <!-- Resource Library -->
+            <li class="adomx-nav-item {{ request()->routeIs('admin.resources.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.resources.index') }}" class="adomx-nav-link">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Resource Library</span>
+                </a>
             </li>
 
             <!-- Audit Logs -->
