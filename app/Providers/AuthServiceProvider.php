@@ -26,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\SupportTicket::class => \App\Policies\SupportTicketPolicy::class,
         \App\Models\LiveSession::class => \App\Policies\LiveSessionPolicy::class,
         \App\Models\Resource::class => \App\Policies\ResourcePolicy::class,
+        \App\Models\Coupon::class => \App\Policies\CouponPolicy::class,
     ];
 
     /**

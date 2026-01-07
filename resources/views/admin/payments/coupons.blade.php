@@ -26,8 +26,8 @@
                     <th>Type</th>
                     <th>Value</th>
                     <th>Min Purchase</th>
-                    <th>Max Discount</th>
                     <th>Usage Limit</th>
+                    <th>Used Count</th>
                     <th>Valid From</th>
                     <th>Valid Until</th>
                     <th>Status</th>
@@ -47,8 +47,8 @@
                             @endif
                         </td>
                         <td>{{ $coupon->min_purchase ? '$' . number_format($coupon->min_purchase, 2) : 'N/A' }}</td>
-                        <td>{{ $coupon->max_discount ? '$' . number_format($coupon->max_discount, 2) : 'N/A' }}</td>
-                        <td>{{ $coupon->usage_limit ?? 'Unlimited' }}</td>
+                        <td>{{ $coupon->max_uses ?? 'Unlimited' }}</td>
+                        <td>{{ $coupon->used_count ?? 0 }}</td>
                         <td>{{ $coupon->valid_from ? $coupon->valid_from->format('M d, Y') : 'N/A' }}</td>
                         <td>{{ $coupon->valid_until ? $coupon->valid_until->format('M d, Y') : 'N/A' }}</td>
                         <td>
